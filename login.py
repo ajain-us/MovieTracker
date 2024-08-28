@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QStackedLayout, QLineEdit, QHBoxLayout, QMainWindow
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory
 from PyQt6.QtCore import Qt
 import sys
 
@@ -7,29 +7,24 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
 
         self.setWindowTitle("Movie Tracker")
-        self.setGeometry(100, 100, 500, 300)
+        self.setGeometry(100, 100, 350, 100)
 
-        #self.layout = QVBoxLayout()
-        self.currentWindow = LoginWindow()
-        #self.layout.addWidget(self.currentWindow)
+        
+        self.setCentralWidget(LoginWindow())
+        self.centralWidget().registerButton.clicked.connect(self.registerButton)
 
-        self.currentWindow.registerButton.clicked.connect(self.registerButton)
-
-        self.setCentralWidget(self.currentWindow)
         self.show()
 
 
     def registerButton(self):
-        self.currentWindow.close()
-        self.currentWindow = RegisterWindow()
-        self.setCentralWidget(self.currentWindow)
-        self.currentWindow.button.clicked.connect(self.registerReturn)
+        self.centralWidget().close()
+        self.setCentralWidget(RegisterWindow())
+        self.centralWidget().returnButton.clicked.connect(self.registerReturn)
 
     def registerReturn(self):
-         self.currentWindow.close()
-         self.currentWindow = LoginWindow()
-         self.setCentralWidget(self.currentWindow)
-         self.currentWindow.registerButton.clicked.connect(self.registerButton)
+         self.centralWidget().close()
+         self.setCentralWidget(LoginWindow())
+         self.centralWidget().registerButton.clicked.connect(self.registerButton)
 
 
 
@@ -37,7 +32,11 @@ class LoginWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
 
-        self.statusLabel = QLabel("Welcome!")
+        self.statusLabel = QLabel("# Login")
+        self.statusLabel.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.statusLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self.statusLabel.setTextFormat(Qt.TextFormat.MarkdownText)
+
         self.userLabel = QLabel("Username")
         self.passwordLabel = QLabel("Password")
         self.userBox = QLineEdit(self, placeholderText = "please enter your username", clearButtonEnabled=True, maxLength = 25)
@@ -83,15 +82,52 @@ class RegisterWindow(QWidget):
         def __init__(self, *args, **kwargs):
              super().__init__(*args,**kwargs)
 
-             self.label = QLabel("This is the register window")
-             self.button = QPushButton("Go back")
+             self.statusLabel = QLabel("# Registration")
+             self.statusLabel.setAlignment(Qt.AlignmentFlag.AlignTop)
+             self.statusLabel.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+             self.statusLabel.setTextFormat(Qt.TextFormat.MarkdownText)
+
+             self.userLabel = QLabel("Username")
+             self.passwordLabel = QLabel("Password")
+
+             self.userBox = QLineEdit(self, placeholderText = "please enter your username", clearButtonEnabled=True, maxLength = 25)
+             self.passwordBox = QLineEdit(self, placeholderText = "Please enter your password", clearButtonEnabled = True, echoMode = QLineEdit.EchoMode.Password)
+
+             self.showPasswordButton = QPushButton("Show Password")
+             self.returnButton = QPushButton("Return to Login")
+             self.registerButton = QPushButton("Register")
+
+             self.layout = QVBoxLayout()
+             self.buttonLayout = QHBoxLayout()
+             self.userLayout = QHBoxLayout()
+             self.passwordLayout = QHBoxLayout()
+
+             self.userLayout.addWidget(self.userLabel)
+             self.userLayout.addWidget(self.userBox)
+
+             self.passwordLayout.addWidget(self.passwordLabel)
+             self.passwordLayout.addWidget(self.passwordBox)
+             self.passwordLayout.addWidget(self.showPasswordButton)
+
+             self.buttonLayout.addWidget(self.returnButton)
+             self.buttonLayout.addWidget(self.registerButton)
 
              layout = QVBoxLayout()
 
-             layout.addWidget(self.label)
-             layout.addWidget(self.button)
+             layout.addWidget(self.statusLabel)
+             layout.addLayout(self.userLayout)
+             layout.addLayout(self.passwordLayout)
+             layout.addLayout(self.buttonLayout)
+
+             self.showPasswordButton.clicked.connect(self.showPasswordToggle)
 
              self.setLayout(layout)
+
+        def showPasswordToggle(self):
+            if(self.passwordBox.echoMode() == QLineEdit.EchoMode.Password):
+                self.passwordBox.setEchoMode(QLineEdit.EchoMode.Normal)
+            else:
+                self.passwordBox.setEchoMode(QLineEdit.EchoMode.Password)
 
              #self.show()
 
@@ -101,6 +137,7 @@ class RegisterWindow(QWidget):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    app.setStyle(QStyleFactory.create("Windows"))
 
     window = MainWindow()
 
