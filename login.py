@@ -7,28 +7,40 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
 
         self.setWindowTitle("Movie Tracker")
-        self.setGeometry(460, 40, 500, 500)
+        self.setGeometry(100, 100, 500, 300)
 
-        self.layout = QVBoxLayout()
+        #self.layout = QVBoxLayout()
         self.currentWindow = LoginWindow()
-        self.layout.addWidget(self.currentWindow)
+        #self.layout.addWidget(self.currentWindow)
 
-        self.currentWindow.loginButton.clicked.connect(self.loginEnter)
+        self.currentWindow.registerButton.clicked.connect(self.registerButton)
 
-        self.setLayout(self.layout)
-        self.show
-    def loginEnter(self):
-        print("wow does this work")
+        self.setCentralWidget(self.currentWindow)
+        self.show()
+
+
+    def registerButton(self):
         self.currentWindow.close()
-        self.currentWindow = SecondWindow()
+        self.currentWindow = RegisterWindow()
+        self.setCentralWidget(self.currentWindow)
+        self.currentWindow.button.clicked.connect(self.registerReturn)
+
+    def registerReturn(self):
+         self.currentWindow.close()
+         self.currentWindow = LoginWindow()
+         self.setCentralWidget(self.currentWindow)
+         self.currentWindow.registerButton.clicked.connect(self.registerButton)
+
 
 
 class LoginWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
 
-        #self.setGeometry(0,0,500,500)
 
+        self.statusLabel = QLabel("Welcome!")
+        self.userLabel = QLabel("Username")
+        self.passwordLabel = QLabel("Password")
         self.userBox = QLineEdit(self, placeholderText = "please enter your username", clearButtonEnabled=True, maxLength = 25)
         self.passwordBox = QLineEdit(self, placeholderText = "Please enter your password", clearButtonEnabled = True, echoMode = QLineEdit.EchoMode.PasswordEchoOnEdit)
         self.loginButton = QPushButton("Enter")
@@ -36,36 +48,44 @@ class LoginWindow(QWidget):
 
         self.layout = QVBoxLayout()
         self.buttonLayout = QHBoxLayout()
+        self.userLayout = QHBoxLayout()
+        self.passwordLayout = QHBoxLayout()
+
+        self.userLayout.addWidget(self.userLabel)
+        self.userLayout.addWidget(self.userBox)
+
+        self.passwordLayout.addWidget(self.passwordLabel)
+        self.passwordLayout.addWidget(self.passwordBox)
 
         self.buttonLayout.addWidget(self.loginButton)
         self.buttonLayout.addWidget(self.registerButton)
         
-
-        self.layout.addWidget(self.userBox)
-        self.layout.addWidget(self.passwordBox)
+        self.layout.addWidget(self.statusLabel)
+        self.layout.addLayout(self.userLayout)
+        self.layout.addLayout(self.passwordLayout)
         self.layout.addLayout(self.buttonLayout)
 
         self.setLayout(self.layout)
 
         #self.setAttribute(Qt.WA_DeleteOnClose)
 
-        self.show()
+        #self.show()
 
-class SecondWindow(QWidget):
+class RegisterWindow(QWidget):
         def __init__(self, *args, **kwargs):
              super().__init__(*args,**kwargs)
 
-             label = QLabel("this is a label!")
-             button = QPushButton("Hide and Show!")
+             self.label = QLabel("This is the register window")
+             self.button = QPushButton("Go back")
 
              layout = QVBoxLayout()
 
-             layout.addWidget(label)
-             layout.addWidget(button)
+             layout.addWidget(self.label)
+             layout.addWidget(self.button)
 
              self.setLayout(layout)
 
-             self.show()
+             #self.show()
 
 
         
