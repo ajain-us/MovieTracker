@@ -32,8 +32,10 @@ class MainWindow(QWidget):
 
         self.show()
     def loginPressed(self):
-        self.login = LoginScreen()
-        self.login.show()
+       self.login = LoginScreen()
+       self.login.show()
+       self.hide()
+       
         
 
 
