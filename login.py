@@ -37,14 +37,14 @@ class LoginWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
 
-
         self.statusLabel = QLabel("Welcome!")
         self.userLabel = QLabel("Username")
         self.passwordLabel = QLabel("Password")
         self.userBox = QLineEdit(self, placeholderText = "please enter your username", clearButtonEnabled=True, maxLength = 25)
-        self.passwordBox = QLineEdit(self, placeholderText = "Please enter your password", clearButtonEnabled = True, echoMode = QLineEdit.EchoMode.PasswordEchoOnEdit)
+        self.passwordBox = QLineEdit(self, placeholderText = "Please enter your password", clearButtonEnabled = True, echoMode = QLineEdit.EchoMode.Password)
         self.loginButton = QPushButton("Enter")
         self.registerButton = QPushButton("Register")
+        self.showPasswordButton = QPushButton("Show Password")
 
         self.layout = QVBoxLayout()
         self.buttonLayout = QHBoxLayout()
@@ -56,6 +56,7 @@ class LoginWindow(QWidget):
 
         self.passwordLayout.addWidget(self.passwordLabel)
         self.passwordLayout.addWidget(self.passwordBox)
+        self.passwordLayout.addWidget(self.showPasswordButton)
 
         self.buttonLayout.addWidget(self.loginButton)
         self.buttonLayout.addWidget(self.registerButton)
@@ -65,11 +66,18 @@ class LoginWindow(QWidget):
         self.layout.addLayout(self.passwordLayout)
         self.layout.addLayout(self.buttonLayout)
 
+        self.showPasswordButton.clicked.connect(self.showPasswordToggle)
+
         self.setLayout(self.layout)
 
         #self.setAttribute(Qt.WA_DeleteOnClose)
+    def showPasswordToggle(self):
+        if(self.passwordBox.echoMode() == QLineEdit.EchoMode.Password):
+            self.passwordBox.setEchoMode(QLineEdit.EchoMode.Normal)
+        else:
+            self.passwordBox.setEchoMode(QLineEdit.EchoMode.Password)
 
-        #self.show()
+                
 
 class RegisterWindow(QWidget):
         def __init__(self, *args, **kwargs):
