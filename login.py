@@ -1,6 +1,12 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory
 from PyQt6.QtCore import Qt
-import sys
+import sys, os, pyodbc, struct, pandas as pd
+from pydantic import BaseModel
+
+
+#connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}'
+#connection = pyodbc.connection(connectionString)
+#cursor = connection.cursor()
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -12,6 +18,7 @@ class MainWindow(QMainWindow):
         
         self.setCentralWidget(LoginWindow())
         self.centralWidget().registerButton.clicked.connect(self.registerButton)
+        self.centralWidget().loginButton.clicked.connect(self.loginButton)
 
         self.show()
 
@@ -25,6 +32,15 @@ class MainWindow(QMainWindow):
          self.centralWidget().close()
          self.setCentralWidget(LoginWindow())
          self.centralWidget().registerButton.clicked.connect(self.registerButton)
+
+    def loginButton(self):
+        if not (self.centralWidget().userBox.text() and self.centralWidget().passwordBox.text()):
+            self.centralWidget().statusLabel.setText("### Please enter a valid username and password")
+        # Need to run SQL query "Select * FROM logins WHERE Username = self.centralWidget().userBox.text()"
+        # 
+
+        
+        
 
 
 
@@ -45,29 +61,29 @@ class LoginWindow(QWidget):
         self.registerButton = QPushButton("Register")
         self.showPasswordButton = QPushButton("Show Password")
 
-        self.layout = QVBoxLayout()
-        self.buttonLayout = QHBoxLayout()
-        self.userLayout = QHBoxLayout()
-        self.passwordLayout = QHBoxLayout()
+        layout = QVBoxLayout()
+        buttonLayout = QHBoxLayout()
+        userLayout = QHBoxLayout()
+        passwordLayout = QHBoxLayout()
 
-        self.userLayout.addWidget(self.userLabel)
-        self.userLayout.addWidget(self.userBox)
+        userLayout.addWidget(self.userLabel)
+        userLayout.addWidget(self.userBox)
 
-        self.passwordLayout.addWidget(self.passwordLabel)
-        self.passwordLayout.addWidget(self.passwordBox)
-        self.passwordLayout.addWidget(self.showPasswordButton)
+        passwordLayout.addWidget(self.passwordLabel)
+        passwordLayout.addWidget(self.passwordBox)
+        passwordLayout.addWidget(self.showPasswordButton)
 
-        self.buttonLayout.addWidget(self.loginButton)
-        self.buttonLayout.addWidget(self.registerButton)
+        buttonLayout.addWidget(self.loginButton)
+        buttonLayout.addWidget(self.registerButton)
         
-        self.layout.addWidget(self.statusLabel)
-        self.layout.addLayout(self.userLayout)
-        self.layout.addLayout(self.passwordLayout)
-        self.layout.addLayout(self.buttonLayout)
+        layout.addWidget(self.statusLabel)
+        layout.addLayout(userLayout)
+        layout.addLayout(passwordLayout)
+        layout.addLayout(buttonLayout)
 
         self.showPasswordButton.clicked.connect(self.showPasswordToggle)
 
-        self.setLayout(self.layout)
+        self.setLayout(layout)
 
         #self.setAttribute(Qt.WA_DeleteOnClose)
     def showPasswordToggle(self):
@@ -97,27 +113,27 @@ class RegisterWindow(QWidget):
              self.returnButton = QPushButton("Return to Login")
              self.registerButton = QPushButton("Register")
 
-             self.layout = QVBoxLayout()
-             self.buttonLayout = QHBoxLayout()
-             self.userLayout = QHBoxLayout()
-             self.passwordLayout = QHBoxLayout()
+             layout = QVBoxLayout()
+             buttonLayout = QHBoxLayout()
+             userLayout = QHBoxLayout()
+             passwordLayout = QHBoxLayout()
 
-             self.userLayout.addWidget(self.userLabel)
-             self.userLayout.addWidget(self.userBox)
+             userLayout.addWidget(self.userLabel)
+             userLayout.addWidget(self.userBox)
 
-             self.passwordLayout.addWidget(self.passwordLabel)
-             self.passwordLayout.addWidget(self.passwordBox)
-             self.passwordLayout.addWidget(self.showPasswordButton)
+             passwordLayout.addWidget(self.passwordLabel)
+             passwordLayout.addWidget(self.passwordBox)
+             passwordLayout.addWidget(self.showPasswordButton)
 
-             self.buttonLayout.addWidget(self.returnButton)
-             self.buttonLayout.addWidget(self.registerButton)
+             buttonLayout.addWidget(self.returnButton)
+             buttonLayout.addWidget(self.registerButton)
 
              layout = QVBoxLayout()
 
              layout.addWidget(self.statusLabel)
-             layout.addLayout(self.userLayout)
-             layout.addLayout(self.passwordLayout)
-             layout.addLayout(self.buttonLayout)
+             layout.addLayout(userLayout)
+             layout.addLayout(passwordLayout)
+             layout.addLayout(buttonLayout)
 
              self.showPasswordButton.clicked.connect(self.showPasswordToggle)
 
@@ -136,6 +152,8 @@ class RegisterWindow(QWidget):
 
 
 if __name__ == '__main__':
+    
+
     app = QApplication(sys.argv)
     app.setStyle(QStyleFactory.create("Windows"))
 
