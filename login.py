@@ -4,9 +4,9 @@ import sys, os, pyodbc, struct, pandas as pd
 from pydantic import BaseModel
 
 
-#connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={SERVER};DATABASE={DATABASE};UID={USERNAME};PWD={PASSWORD}'
-#connection = pyodbc.connection(connectionString)
-#cursor = connection.cursor()
+connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={'movie-tracker-aj.database.windows.net'};DATABASE={'movie tracker aj'};UID={'adminsql'};PWD={'&yHASu9NFf?87vz'}'
+connection = pyodbc.connect(connectionString)
+cursor = connection.cursor()
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -36,8 +36,22 @@ class MainWindow(QMainWindow):
     def loginButton(self):
         if not (self.centralWidget().userBox.text() and self.centralWidget().passwordBox.text()):
             self.centralWidget().statusLabel.setText("### Please enter a valid username and password")
+            return
+        queryString = "SELECT * FROM Logins WHERE Username = '" + self.centralWidget().userBox.text() + "'"
+        #print(queryString)
+        cursor.execute(queryString)
+        loginRow = cursor.fetchall()
         # Need to run SQL query "Select * FROM logins WHERE Username = self.centralWidget().userBox.text()"
-        # 
+        if not loginRow:
+            self.centralWidget().statusLabel.setText("### Username not found, please try again")
+            return
+        
+        if self.centralWidget().passwordBox.text() == loginRow[0].Password:
+            self.centralWidget().statusLabel.setText("### Logging you in!")
+        else:
+            self.centralWidget().statusLabel.setText("### That password is wrong")
+        
+        #print(loginRow[0].Password)
 
         
         
@@ -147,6 +161,11 @@ class RegisterWindow(QWidget):
 
              #self.show()
 
+class InfoWindow(QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        
 
         
 
