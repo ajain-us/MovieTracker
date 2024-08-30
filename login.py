@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QListWidget
 from PyQt6.QtCore import Qt
-import sys, os, pyodbc, struct, pandas as pd
-from pydantic import BaseModel
+import sys, pyodbc
+
 
 
 connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={'movie-tracker-aj.database.windows.net'};DATABASE={'movie tracker aj'};UID={'adminsql'};PWD={'&yHASu9NFf?87vz'}'
@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
          self.centralWidget().close()
          self.setCentralWidget(LoginWindow())
          self.centralWidget().registerButton.clicked.connect(self.registerButton)
+         self.centralWidget().loginButton.clicked.connect(self.loginButton)
 
     def loginButton(self):
         if not (self.centralWidget().userBox.text() and self.centralWidget().passwordBox.text()):
@@ -48,10 +49,19 @@ class MainWindow(QMainWindow):
         
         if self.centralWidget().passwordBox.text() == loginRow[0].Password:
             self.centralWidget().statusLabel.setText("### Logging you in!")
+            self.centralWidget().close()
+            self.setCentralWidget(InfoWindow(loginRow[0].Username))
+            self.centralWidget().logoutButton.clicked.connect(self.logoutButton)
         else:
             self.centralWidget().statusLabel.setText("### That password is wrong")
         
         #print(loginRow[0].Password)
+    def logoutButton(self):
+        self.centralWidget().close()
+        self.setCentralWidget(LoginWindow())
+        self.centralWidget().registerButton.clicked.connect(self.registerButton)
+        self.centralWidget().loginButton.clicked.connect(self.loginButton)
+
 
         
         
@@ -150,6 +160,7 @@ class RegisterWindow(QWidget):
              layout.addLayout(buttonLayout)
 
              self.showPasswordButton.clicked.connect(self.showPasswordToggle)
+             self.registerButton.clicked.connect(self.register)
 
              self.setLayout(layout)
 
@@ -160,10 +171,64 @@ class RegisterWindow(QWidget):
                 self.passwordBox.setEchoMode(QLineEdit.EchoMode.Password)
 
              #self.show()
+        def register(self):
+            if not (self.userBox.text() and self.passwordBox.text()):
+                self.statusLabel.setText("### Please enter a valid username and password")
+                return
+            queryString = "SELECT * FROM Logins WHERE Username = '" + self.userBox.text() + "'"
+            #print(queryString)
+            cursor.execute(queryString)
+            loginRow = cursor.fetchall()
+            if not loginRow:
+                #add the login
+                queryString = "INSERT INTO Logins (Username, Password) VALUES ('" + self.userBox.text() + "', '" + self.passwordBox.text() +"');"
+                cursor.execute(queryString)
+                connection.commit()
+                self.statusLabel.setText("### User added, please return to login")
+            else:
+                self.statusLabel.setText("### This username is already taken")
+                return
+
 
 class InfoWindow(QWidget):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.nameLabel = QLabel(name)
+        self.logoutButton = QPushButton("Logout")
+        self.list = QListWidget()
+        self.shows = [Item(title = "DBZ", status="C", rating = 10, totalEpisodes=250, currentEpisode=250)]
+
+        
+
+        for show in self.shows:
+            self.list.addItem(show.title)
+
+        for x in range(100):
+            self.list.addItem(str(x))
+
+
+        #queryString = ""
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.nameLabel)
+        layout.addWidget(self.logoutButton)
+        layout.addWidget(self.list)
+        
+
+        self.setLayout(layout)
+
+
+
+class Item():
+    def __init__(self, title, status, rating, totalEpisodes, currentEpisode):
+        super().__init__()
+        self.title = title
+        self.status = status
+        self.rating = rating
+        self.totalEpisodes = totalEpisodes
+        self.currentEpisode = currentEpisode
+    
 
         
 
