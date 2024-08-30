@@ -239,7 +239,9 @@ if __name__ == '__main__':
     
 
     app = QApplication(sys.argv)
-    app.setStyle(QStyleFactory.create("Windows"))
+    for x in QStyleFactory.keys():
+        print(x)
+    app.setStyle(QStyleFactory.create("fusion"))
 
     window = MainWindow()
 
