@@ -62,12 +62,6 @@ class MainWindow(QMainWindow):
         self.centralWidget().registerButton.clicked.connect(self.registerButton)
         self.centralWidget().loginButton.clicked.connect(self.loginButton)
 
-
-
-        
-
-
-
 class LoginWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
@@ -114,9 +108,7 @@ class LoginWindow(QWidget):
         if(self.passwordBox.echoMode() == QLineEdit.EchoMode.Password):
             self.passwordBox.setEchoMode(QLineEdit.EchoMode.Normal)
         else:
-            self.passwordBox.setEchoMode(QLineEdit.EchoMode.Password)
-
-                
+            self.passwordBox.setEchoMode(QLineEdit.EchoMode.Password)     
 
 class RegisterWindow(QWidget):
         def __init__(self, *args, **kwargs):
@@ -189,7 +181,6 @@ class RegisterWindow(QWidget):
                 self.statusLabel.setText("### This username is already taken")
                 return
 
-
 class InfoWindow(QWidget):
     def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -230,6 +221,8 @@ class InfoWindow(QWidget):
 
 
         #tableWidget.cellDoubleClicked.connect(on_cell_double_clicked) and this function takes in (row: int, column: int)
+
+
         middleLayout = QHBoxLayout()
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(self.addShow)
@@ -258,8 +251,6 @@ class addShowWindow(QWidget):
         self.totalEpisodesLabel = QLabel("Total Episodes:")
         self.currentEpisodeLabel = QLabel("Current Episode:")
 
-
-
 class Item():
     def __init__(self, title, status, rating, totalEpisodes, currentEpisode):
         super().__init__()
@@ -268,12 +259,6 @@ class Item():
         self.rating = rating
         self.totalEpisodes = totalEpisodes
         self.currentEpisode = currentEpisode
-    
-
-        
-
-        
-
 
 if __name__ == '__main__':
     
