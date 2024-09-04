@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QListWidget, QTableWidget
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QTableWidgetItem, QTableWidget
 from PyQt6.QtCore import Qt
 import sys, pyodbc
 
@@ -210,15 +210,26 @@ class InfoWindow(QWidget):
         cursor.execute(queryString)
         showsInfo = cursor.fetchall()
 
+        #Item(show.Title, show.WatchStatus, show.Rating, show.TotalEpisodes, show.CurrentEpisode)
+
         for show in showsInfo:
-            self.shows.append(Item(show.Title, show.WatchStatus, show.Rating, show.TotalEpisodes, show.CurrentEpisode))
+            self.shows.append({Item(show.Title, show.WatchStatus, show.Rating, show.TotalEpisodes, show.CurrentEpisode)})
             self.showsTable.setRowCount(self.showsTable.rowCount() + 1)
+            tableWidgets = [QTableWidgetItem(show.Title),QTableWidgetItem(show.WatchStatus), QTableWidgetItem(str(show.Rating)), QTableWidgetItem(str(show.CurrentEpisode) + "/" + str(show.TotalEpisodes))]
+            for aspect in tableWidgets:
+                aspect.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
+                aspect.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            self.showsTable.setItem(self.showsTable.rowCount()-1, 0, tableWidgets[0])
+            self.showsTable.setItem(self.showsTable.rowCount()-1, 1, tableWidgets[1])
+            self.showsTable.setItem(self.showsTable.rowCount()-1, 2, tableWidgets[2])
+            self.showsTable.setItem(self.showsTable.rowCount()-1, 3, tableWidgets[3])
 
 
         
 
 
-        #queryString = ""
+        #tableWidget.cellDoubleClicked.connect(on_cell_double_clicked) and this function takes in (row: int, column: int)
         middleLayout = QHBoxLayout()
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(self.addShow)
@@ -270,6 +281,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     for x in QStyleFactory.keys():
         print(x)
+    
     app.setStyle(QStyleFactory.create("fusion"))
 
     window = MainWindow()
