@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
         self.centralWidget().loginButton.clicked.connect(self.loginButton)
 
 
-        
+
         
 
 
@@ -196,24 +196,38 @@ class InfoWindow(QWidget):
 
         self.nameLabel = QLabel(name)
         self.logoutButton = QPushButton("Logout")
+        self.addShow = QPushButton("Add")
+        self.deleteShow = QPushButton("Delete")
+        self.saveButton = QPushButton("Save")
         self.list = QListWidget()
-        self.shows = [Item(title = "DBZ", status="C", rating = 10, totalEpisodes=250, currentEpisode=250)]
+        self.shows = []
+
+        queryString = "SELECT * FROM shows WHERE Username = '" + name + "'"
+        cursor.execute(queryString)
+        showsInfo = cursor.fetchall()
+
+        for show in showsInfo:
+            self.shows.append(Item(show.Title, show.WatchStatus, show.Rating, show.TotalEpisodes, show.CurrentEpisode))
+            self.list.addItem(show.Title)
 
         
 
-        for show in self.shows:
-            self.list.addItem(show.title)
-
-        for x in range(100):
-            self.list.addItem(str(x))
-
 
         #queryString = ""
+        middleLayout = QHBoxLayout()
+        buttonLayout = QVBoxLayout()
+        buttonLayout.addWidget(self.addShow)
+        buttonLayout.addWidget(self.deleteShow)
+        buttonLayout.addWidget(self.saveButton)
+        buttonLayout.addWidget(self.logoutButton)
+
+        middleLayout.addWidget(self.list)
+        middleLayout.addLayout(buttonLayout)
 
         layout = QVBoxLayout()
         layout.addWidget(self.nameLabel)
-        layout.addWidget(self.logoutButton)
-        layout.addWidget(self.list)
+        layout.addLayout(middleLayout)
+        
         
 
         self.setLayout(layout)
