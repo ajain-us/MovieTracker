@@ -199,8 +199,12 @@ class InfoWindow(QWidget):
         self.addShow = QPushButton("Add")
         self.deleteShow = QPushButton("Delete")
         self.saveButton = QPushButton("Save")
-        self.list = QListWidget()
+        self.showsTable = QTableWidget()
+        
         self.shows = []
+
+        self.showsTable.setColumnCount(4)
+        self.showsTable.setHorizontalHeaderLabels(["Name", "Status", "Rating", "Episodes"])
 
         queryString = "SELECT * FROM shows WHERE Username = '" + name + "'"
         cursor.execute(queryString)
@@ -208,7 +212,8 @@ class InfoWindow(QWidget):
 
         for show in showsInfo:
             self.shows.append(Item(show.Title, show.WatchStatus, show.Rating, show.TotalEpisodes, show.CurrentEpisode))
-            self.list.addItem(show.Title)
+            self.showsTable.setRowCount(self.showsTable.rowCount() + 1)
+
 
         
 
@@ -221,7 +226,7 @@ class InfoWindow(QWidget):
         buttonLayout.addWidget(self.saveButton)
         buttonLayout.addWidget(self.logoutButton)
 
-        middleLayout.addWidget(self.list)
+        middleLayout.addWidget(self.showsTable)
         middleLayout.addLayout(buttonLayout)
 
         layout = QVBoxLayout()
