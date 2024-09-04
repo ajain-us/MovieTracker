@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QListWidget
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QListWidget, QTableWidget
 from PyQt6.QtCore import Qt
 import sys, pyodbc
 
@@ -194,7 +194,7 @@ class InfoWindow(QWidget):
     def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.nameLabel = QLabel(name)
+        self.nameLabel = QLabel("Logged in as: " + name)
         self.logoutButton = QPushButton("Logout")
         self.addShow = QPushButton("Add")
         self.deleteShow = QPushButton("Delete")
@@ -231,6 +231,16 @@ class InfoWindow(QWidget):
         
 
         self.setLayout(layout)
+
+class addShowWindow(QWidget):
+    def __init__(self, name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.titleLabel = QLabel("Title:")
+        self.statusLabel = QLabel("Watch Status:")
+        self.ratingLabel = QLabel("Rating:")
+        self.totalEpisodesLabel = QLabel("Total Episodes:")
+        self.currentEpisodeLabel = QLabel("Current Episode:")
 
 
 
