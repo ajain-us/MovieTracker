@@ -200,7 +200,7 @@ class RegisterWindow(QWidget):
                 connection.commit()
                 dialog = QMessageBox()
                 dialog.setText("User has been added, please return to login")
-                dialog.setIcon(QMessageBox.Icon.Warning)
+                dialog.setIcon(QMessageBox.Icon.Information)
                 dialog.exec()
             else:
                 dialog = QMessageBox()
@@ -245,7 +245,7 @@ class InfoWindow(QWidget):
             self.showsTable.setItem(self.showsTable.rowCount()-1, 1, tableWidgets[1])
             self.showsTable.setItem(self.showsTable.rowCount()-1, 2, tableWidgets[2])
             self.showsTable.setItem(self.showsTable.rowCount()-1, 3, tableWidgets[3])
-        #tableWidget.cellDoubleClicked.connect(on_cell_double_clicked) and this function takes in (row: int, column: int)
+
         middleLayout = QHBoxLayout()
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(self.addShow)
