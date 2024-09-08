@@ -47,7 +47,10 @@ class MainWindow(QMainWindow):
 
     def loginButton(self):
         if not (self.centralWidget().userBox.text() and self.centralWidget().passwordBox.text()):
-            self.centralWidget().statusLabel.setText("### Please enter a valid username and password")
+            dialog = QMessageBox()
+            dialog.setText("Please enter a valid username and password")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
             return
         queryString = "SELECT * FROM Logins WHERE Username = '" + self.centralWidget().userBox.text() + "'"
         #print(queryString)
@@ -55,16 +58,21 @@ class MainWindow(QMainWindow):
         loginRow = cursor.fetchall()
         # Need to run SQL query "Select * FROM logins WHERE Username = self.centralWidget().userBox.text()"
         if not loginRow:
-            self.centralWidget().statusLabel.setText("### Username not found, please try again")
+            dialog = QMessageBox()
+            dialog.setText("This username was not found")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
             return
         
         if self.centralWidget().passwordBox.text() == loginRow[0].Password:
-            self.centralWidget().statusLabel.setText("### Logging you in!")
             self.centralWidget().close()
             self.setCentralWidget(InfoWindow(loginRow[0].Username))
             self.centralWidget().logoutButton.clicked.connect(self.logoutButton)
         else:
-            self.centralWidget().statusLabel.setText("### That password is wrong")
+            dialog = QMessageBox()
+            dialog.setText("The username or password is wrong")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
         
         #print(loginRow[0].Password)
     def logoutButton(self):
@@ -176,7 +184,10 @@ class RegisterWindow(QWidget):
              #self.show()
         def register(self):
             if not (self.userBox.text() and self.passwordBox.text()):
-                self.statusLabel.setText("### Please enter a valid username and password")
+                dialog = QMessageBox()
+                dialog.setText("Please enter a valid username or password")
+                dialog.setIcon(QMessageBox.Icon.Warning)
+                dialog.exec()
                 return
             queryString = "SELECT * FROM Logins WHERE Username = '" + self.userBox.text() + "'"
             #print(queryString)
@@ -187,9 +198,15 @@ class RegisterWindow(QWidget):
                 queryString = "INSERT INTO Logins (Username, Password) VALUES ('" + self.userBox.text() + "', '" + self.passwordBox.text() +"');"
                 cursor.execute(queryString)
                 connection.commit()
-                self.statusLabel.setText("### User added, please return to login")
+                dialog = QMessageBox()
+                dialog.setText("User has been added, please return to login")
+                dialog.setIcon(QMessageBox.Icon.Warning)
+                dialog.exec()
             else:
-                self.statusLabel.setText("### This username is already taken")
+                dialog = QMessageBox()
+                dialog.setText("This username already exists")
+                dialog.setIcon(QMessageBox.Icon.Warning)
+                dialog.exec()
                 return
 
 class InfoWindow(QWidget):
@@ -463,6 +480,5 @@ if __name__ == '__main__':
     app.setStyle(QStyleFactory.create("fusion"))
 
     window = MainWindow()
-
 
     sys.exit(app.exec())
