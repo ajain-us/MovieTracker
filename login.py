@@ -1,15 +1,19 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QTableWidgetItem, QTableWidget, QComboBox, QMessageBox
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIntValidator
+from PyQt6.QtGui import QIntValidator, QScreen
 import sys, pyodbc, time
 
 
-
+#This is the connection string, you can change this to make it work with your own SQL server
+#if you try to connect with current login information it will not work as I have depricated the SQL server
 connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={'movie-tracker-aj.database.windows.net'};DATABASE={'movie tracker aj'};UID={'adminsql'};PWD={'&yHASu9NFf?87vz'}'
-
+#handling if the connection can be established
 try:
+    #creates the connection
     connection = pyodbc.connect(connectionString)
+    #creates a cursor that can be used to edit the tables
     cursor = connection.cursor()
+# if we cannot connect to the server create a popup and shutdown the program
 except TimeoutError as e:
     dialog = QMessageBox()
     dialog.setText("Could not establish a connection to server")
@@ -18,13 +22,14 @@ except TimeoutError as e:
     time.sleep(10)
     sys.exit()
 
-
+#Class that extends QMainWindow, handles all the main GUI layouts
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
+        #call to super constructor
         super().__init__(*args, **kwargs)
-
+        #setting the window title and siz
         self.setWindowTitle("Movie Tracker")
-        self.setGeometry(100, 100, 350, 100)
+        self.setGeometry(int((QApplication.primaryScreen().geometry().width()/2 - 250)), int((QApplication.primaryScreen().geometry().height()/2 - 50)), 500, 100)
 
         
         self.setCentralWidget(LoginWindow())
@@ -298,6 +303,8 @@ class addShowWindow(QWidget):
     def __init__(self, name, table, shows, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.setWindowTitle("Add")
+
         self.exitButton = QPushButton("add")
 
         self.statusLabel = QLabel("Edit")
@@ -389,6 +396,8 @@ class addShowWindow(QWidget):
 class editShowWindow(QWidget):
     def __init__(self, item, name, table, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.setWindowTitle("Edit")
 
         self.exitButton = QPushButton("exit")
 
