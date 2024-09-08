@@ -13,7 +13,7 @@ I will write this soon
 
 ## Usage
 ``` bash
-python main.py
+python login.py
 ```
 
 ## Notes
