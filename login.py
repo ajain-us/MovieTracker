@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QTableWidgetItem, QTableWidget, QComboBox
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QTableWidgetItem, QTableWidget, QComboBox, QMessageBox
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIntValidator
 import sys, pyodbc
@@ -236,11 +236,21 @@ class InfoWindow(QWidget):
 
         self.editButton.clicked.connect(self.editFunction)
         self.addShow.clicked.connect(self.addShowFunction)
+        self.deleteShow.clicked.connect(self.deleteShowFunction)
 
         self.setLayout(layout)
 
     def addShowFunction(self):
         self.addShowWindow = addShowWindow(self.name, self.showsTable, self.shows)
+
+    def deleteShowFunction(self):
+        if(self.showsTable.currentRow() < 0):
+            dialog = QMessageBox()
+            dialog.setText("Please select a show to remove")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
+
+        
 
     def editFunction(self):
         print("well we are on row " + str(self.showsTable.currentRow()))
