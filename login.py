@@ -394,7 +394,7 @@ class editShowWindow(QWidget):
             self.watchStatusDrop.setCurrentIndex(2)
         self.ratingDrop = QComboBox()
         self.ratingDrop.addItems(['1','2','3','4','5','6','7','8','9','10'])
-        self.ratingDrop.setCurrentIndex(item.rating-1)
+        self.ratingDrop.setCurrentIndex(int(item.rating)-1)
         self.episodeBox = QLineEdit()
         self.episodeBox.setText(str(item.currentEpisode))
         self.episodeBox.setValidator(QIntValidator(0, int(item.totalEpisodes)+1))
@@ -435,12 +435,12 @@ class editShowWindow(QWidget):
             item.rating = self.ratingDrop.currentText()
             item.currentEpisode = self.episodeBox.text()
 
-            queryString = "UPDATE shows WatchStatus = " + item.status + ", Rating = " + item.rating + ", CurrentEpisode = " + item.currentEpisode + "WHERE Username = '" + name + "' AND Title = '" + item.title
+            queryString = "UPDATE shows SET WatchStatus = '" + item.status + "', Rating = " + item.rating + ", CurrentEpisode = " + item.currentEpisode + " WHERE Username = '" + name + "' AND Title = '" + item.title + "'"
             cursor.execute(queryString)
             cursor.commit()
             table.item(table.currentRow(),1).setText(item.status)
             table.item(table.currentRow(),2).setText(item.rating)
-            table.item(table.currentRow(),3).setText(str(item.currentEpisode) + "/" + str(item.totalEpisode))
+            table.item(table.currentRow(),3).setText(str(item.currentEpisode) + "/" + str(item.totalEpisodes))
             self.close()
 
         
