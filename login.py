@@ -186,6 +186,8 @@ class InfoWindow(QWidget):
     def __init__(self, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+
+        self.name = name;
         self.nameLabel = QLabel("Logged in as: " + name)
         self.logoutButton = QPushButton("Logout")
         self.addShow = QPushButton("Add")
@@ -233,11 +235,12 @@ class InfoWindow(QWidget):
 
 
         self.editButton.clicked.connect(self.editFunction)
+        self.addShow.clicked.connect(self.addShowFunction)
 
         self.setLayout(layout)
 
-    def addShow(self):
-
+    def addShowFunction(self):
+        self.addShowWindow = addShowWindow(self.name, self.showsTable, self.shows)
 
     def editFunction(self):
         print("well we are on row " + str(self.showsTable.currentRow()))
@@ -246,7 +249,7 @@ class InfoWindow(QWidget):
 
 
 class addShowWindow(QWidget):
-    def __init__(self, name, table, *args, **kwargs):
+    def __init__(self, name, table, shows, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.exitButton = QPushButton("add")
@@ -290,8 +293,37 @@ class addShowWindow(QWidget):
         layout.addLayout(itemsLayout)
         layout.addWidget(self.exitButton)
 
+        self.exitButton.clicked.connect(lambda: self.addButtonFunction(table, name, shows))
+
         self.setLayout(layout)
         self.show()
+    def addButtonFunction(self, table, name, shows):
+        if(self.titleBox.text() == ""):
+            self.statusLabel.setText("Please enter a title")
+        elif(int(self.episodeBox.text()) > int(self.tepisodeBox.text())):
+            self.statusLabel.setText("Please enter a valid episode amount")
+        else:
+            for item in shows:
+                if self.titleBox.text() == item.title:
+                    self.statusLabel.setText("This title already exists!")
+                    return
+            shows.append(Item(self.titleBox.text(), self.watchStatusDrop.currentText(), self.ratingDrop.currentText(), self.tepisodeBox.text(), self.episodeBox.text()))
+
+            tableWidgets = [QTableWidgetItem(self.titleBox.text()),
+                            QTableWidgetItem(self.watchStatusDrop.currentText()), 
+                            QTableWidgetItem(str(self.ratingDrop.currentText())), 
+                            QTableWidgetItem(str(self.episodeBox.text()) + "/" + str(self.tepisodeBox.text()))]
+            for aspect in tableWidgets:
+                aspect.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
+                aspect.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            table.setItem(table.rowCount()-1, 0, tableWidgets[0])
+            table.setItem(table.rowCount()-1, 1, tableWidgets[1])
+            table.setItem(table.rowCount()-1, 2, tableWidgets[2])
+            table.setItem(table.rowCount()-1, 3, tableWidgets[3])
+            self.close()
+        print("Well this should work!")
+
 
 class editShowWindow(QWidget):
     def __init__(self, item, name, table, *args, **kwargs):
