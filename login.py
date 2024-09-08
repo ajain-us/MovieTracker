@@ -268,9 +268,13 @@ class InfoWindow(QWidget):
             #print(self.showsTable.item(self.showsTable.currentRow(),0).text())
 
     def editFunction(self):
-        print("well we are on row " + str(self.showsTable.currentRow()))
-        if(self.showsTable.currentRow() > 0):
+        if(self.showsTable.currentRow() >= 0):
             self.temp = editShowWindow(self.shows[self.showsTable.currentRow()], self.name, self.showsTable)
+        else:
+            dialog = QMessageBox()
+            dialog.setText("Please select a show")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
 
 
 class addShowWindow(QWidget):
@@ -379,6 +383,7 @@ class editShowWindow(QWidget):
 
         self.titleBox = QLineEdit()
         self.titleBox.setText(item.title)
+        self.titleBox.setEnabled(False)
         self.watchStatusDrop = QComboBox()
         self.watchStatusDrop.addItems(['P','W','C'])
         if(item.status == 'P'):
@@ -415,8 +420,31 @@ class editShowWindow(QWidget):
         layout.addLayout(itemsLayout)
         layout.addWidget(self.exitButton)
 
+        self.exitButton.clicked.connect(lambda: self.exitButtonFunction(item, name, table))
+
         self.setLayout(layout)
         self.show()
+    def exitButtonFunction(self, item, name, table):
+        if (int(self.episodeBox.text()) > int(item.totalEpisodes) or int(self.episodeBox.text()) < 0 ):
+            dialog = QMessageBox()
+            dialog.setText("Please enter a current amount of episodes")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
+        else:
+            item.status = self.watchStatusDrop.currentText()
+            item.rating = self.ratingDrop.currentText()
+            item.currentEpisode = self.episodeBox.text()
+
+            queryString = "UPDATE shows WatchStatus = " + item.status + ", Rating = " + item.rating + ", CurrentEpisode = " + item.currentEpisode + "WHERE Username = '" + name + "' AND Title = '" + item.title
+            cursor.execute(queryString)
+            cursor.commit()
+            table.item(table.currentRow(),1).setText(item.status)
+            table.item(table.currentRow(),2).setText(item.rating)
+            table.item(table.currentRow(),3).setText(str(item.currentEpisode) + "/" + str(item.totalEpisode))
+            self.close()
+
+        
+
 
 class Item():
     def __init__(self, title, status, rating, totalEpisodes, currentEpisode):
@@ -431,8 +459,6 @@ if __name__ == '__main__':
     
 
     app = QApplication(sys.argv)
-    for x in QStyleFactory.keys():
-        print(x)
     
     app.setStyle(QStyleFactory.create("fusion"))
 
