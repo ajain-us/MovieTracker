@@ -1,13 +1,23 @@
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QMainWindow, QStyleFactory, QTableWidgetItem, QTableWidget, QComboBox, QMessageBox
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QIntValidator
-import sys, pyodbc
+import sys, pyodbc, time
 
 
 
 connectionString = f'DRIVER={{ODBC Driver 18 for SQL Server}};SERVER={'movie-tracker-aj.database.windows.net'};DATABASE={'movie tracker aj'};UID={'adminsql'};PWD={'&yHASu9NFf?87vz'}'
-connection = pyodbc.connect(connectionString)
-cursor = connection.cursor()
+
+try:
+    connection = pyodbc.connect(connectionString)
+    cursor = connection.cursor()
+except TimeoutError as e:
+    dialog = QMessageBox()
+    dialog.setText("Could not establish a connection to server")
+    dialog.setIcon(QMessageBox.Icon.Warning)
+    dialog.exec()
+    time.sleep(10)
+    sys.exit()
+
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -249,13 +259,18 @@ class InfoWindow(QWidget):
             dialog.setText("Please select a show to remove")
             dialog.setIcon(QMessageBox.Icon.Warning)
             dialog.exec()
-
-        
+        else:
+            queryString = "DELETE FROM shows WHERE Username = '" + self.name + "' AND Title = '" + self.showsTable.item(self.showsTable.currentRow(),0).text() + "'"
+            cursor.execute(queryString)
+            cursor.commit()
+            self.shows.pop(self.showsTable.currentRow())
+            self.showsTable.removeRow(self.showsTable.currentRow())
+            #print(self.showsTable.item(self.showsTable.currentRow(),0).text())
 
     def editFunction(self):
         print("well we are on row " + str(self.showsTable.currentRow()))
         if(self.showsTable.currentRow() > 0):
-            self.temp = editShowWindow(self.shows[self.showsTable.currentRow()])
+            self.temp = editShowWindow(self.shows[self.showsTable.currentRow()], self.name, self.showsTable)
 
 
 class addShowWindow(QWidget):
@@ -311,13 +326,22 @@ class addShowWindow(QWidget):
         self.show()
     def addButtonFunction(self, table, name, shows):
         if(self.titleBox.text() == ""):
-            self.statusLabel.setText("Please enter a title")
+            dialog = QMessageBox()
+            dialog.setText("Please Enter a title")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
         elif(int(self.episodeBox.text()) > int(self.tepisodeBox.text())):
-            self.statusLabel.setText("Please enter a valid episode amount")
+            dialog = QMessageBox()
+            dialog.setText("Please enter valid episode numbers")
+            dialog.setIcon(QMessageBox.Icon.Warning)
+            dialog.exec()
         else:
             for item in shows:
                 if self.titleBox.text() == item.title:
-                    self.statusLabel.setText("This title already exists!")
+                    dialog = QMessageBox()
+                    dialog.setText("This Title already exists")
+                    dialog.setIcon(QMessageBox.Icon.Warning)
+                    dialog.exec()
                     return
             shows.append(Item(self.titleBox.text(), self.watchStatusDrop.currentText(), self.ratingDrop.currentText(), self.tepisodeBox.text(), self.episodeBox.text()))
 
@@ -333,13 +357,12 @@ class addShowWindow(QWidget):
             for aspect in tableWidgets:
                 aspect.setFlags(Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsEnabled)
                 aspect.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-
+            table.setRowCount(table.rowCount() + 1)
             table.setItem(table.rowCount()-1, 0, tableWidgets[0])
             table.setItem(table.rowCount()-1, 1, tableWidgets[1])
             table.setItem(table.rowCount()-1, 2, tableWidgets[2])
             table.setItem(table.rowCount()-1, 3, tableWidgets[3])
             self.close()
-        print("Well this should work!")
 
 
 class editShowWindow(QWidget):
