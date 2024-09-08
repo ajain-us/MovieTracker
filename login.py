@@ -267,7 +267,9 @@ class addShowWindow(QWidget):
         self.ratingDrop = QComboBox()
         self.ratingDrop.addItems(['1','2','3','4','5','6','7','8','9','10'])
         self.episodeBox = QLineEdit()
+        self.episodeBox.setValidator(QIntValidator())
         self.tepisodeBox = QLineEdit()
+        self.tepisodeBox.setValidator(QIntValidator())
         
 
         labelsLayout = QVBoxLayout()
@@ -308,6 +310,11 @@ class addShowWindow(QWidget):
                     self.statusLabel.setText("This title already exists!")
                     return
             shows.append(Item(self.titleBox.text(), self.watchStatusDrop.currentText(), self.ratingDrop.currentText(), self.tepisodeBox.text(), self.episodeBox.text()))
+
+            queryString = "INSERT INTO shows (Username, Title, WatchStatus, Rating, TotalEpisodes, CurrentEpisode) VALUES ('" + str(name) + "', '" + self.titleBox.text() + "', '" + self.watchStatusDrop.currentText() + "', " + self.ratingDrop.currentText() + ", " + self.tepisodeBox.text() + ", " + self.episodeBox.text() + ")"
+
+            cursor.execute(queryString)
+            cursor.commit()
 
             tableWidgets = [QTableWidgetItem(self.titleBox.text()),
                             QTableWidgetItem(self.watchStatusDrop.currentText()), 
