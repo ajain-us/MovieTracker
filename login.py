@@ -27,65 +27,85 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         #call to super constructor
         super().__init__(*args, **kwargs)
-        #setting the window title and siz
+        #setting the window title and size in the center
         self.setWindowTitle("Movie Tracker")
         self.setGeometry(int((QApplication.primaryScreen().geometry().width()/2 - 250)), int((QApplication.primaryScreen().geometry().height()/2 - 50)), 500, 100)
-
-        
+        # creates a login window and sets it as the main widget
         self.setCentralWidget(LoginWindow())
+        # creates connections between the LoginWindow buttons and the functions in MainWindow class
         self.centralWidget().registerButton.clicked.connect(self.registerButton)
         self.centralWidget().loginButton.clicked.connect(self.loginButton)
-
+        #enables the window to be sene
         self.show()
-
-
+    # this function deals with what happens when the register button is clicked
     def registerButton(self):
+        # disables the current login window
         self.centralWidget().close()
+        # sets the register window as the central window
         self.setCentralWidget(RegisterWindow())
+        # connects the return button functionality to the function in MainWindow class
         self.centralWidget().returnButton.clicked.connect(self.registerReturn)
-
+    # this function deals with what happens when the return button in pressed in the register window
     def registerReturn(self):
+         # closes the register window 
          self.centralWidget().close()
+         # sets the central window to login window
          self.setCentralWidget(LoginWindow())
+         # sets the login window button functionality with the functions in class MainWindow
          self.centralWidget().registerButton.clicked.connect(self.registerButton)
          self.centralWidget().loginButton.clicked.connect(self.loginButton)
-
+    # this function deals with what happens when the login button is pressed from the login window class
     def loginButton(self):
+        # checks to see if the user actually provided a username and password
         if not (self.centralWidget().userBox.text() and self.centralWidget().passwordBox.text()):
+            # creates a pop up window that informs the user to add a username and password
             dialog = QMessageBox()
             dialog.setText("Please enter a valid username and password")
             dialog.setIcon(QMessageBox.Icon.Warning)
             dialog.exec()
             return
+        # creates a query string to check the SQL server and get the login info
         queryString = "SELECT * FROM Logins WHERE Username = '" + self.centralWidget().userBox.text() + "'"
-        #print(queryString)
+        #print(queryString), debug statement to see if the query string is proper
+        # actually processes the query string
         cursor.execute(queryString)
+        # saves the login information row into a variable
         loginRow = cursor.fetchall()
         # Need to run SQL query "Select * FROM logins WHERE Username = self.centralWidget().userBox.text()"
+        # above statement was a note while coding
+        # if the login row was not found, then we inform the user that the username was not found
         if not loginRow:
+            # creates popup that informs the user that their username was not found
             dialog = QMessageBox()
             dialog.setText("This username was not found")
             dialog.setIcon(QMessageBox.Icon.Warning)
             dialog.exec()
             return
-        
+        # checks to see if the password matches
         if self.centralWidget().passwordBox.text() == loginRow[0].Password:
+            # if it does, then we close the login window
             self.centralWidget().close()
+            # create a new information window and provide the username to it
             self.setCentralWidget(InfoWindow(loginRow[0].Username))
+            # sets the functionality of the logout button in the info window
             self.centralWidget().logoutButton.clicked.connect(self.logoutButton)
         else:
+            # if the password does not match we will inform the user that it is wrong
             dialog = QMessageBox()
             dialog.setText("The username or password is wrong")
             dialog.setIcon(QMessageBox.Icon.Warning)
             dialog.exec()
-        
-        #print(loginRow[0].Password)
+        #print(loginRow[0].Password) : debug statement to see if the password was being found correctly
+    # this function sets the functionality for the logout button in info window
     def logoutButton(self):
+        # closes the info window
         self.centralWidget().close()
+        # sets the central window back to login window
         self.setCentralWidget(LoginWindow())
+        # sets the functionality of the login window buttons
         self.centralWidget().registerButton.clicked.connect(self.registerButton)
         self.centralWidget().loginButton.clicked.connect(self.loginButton)
-
+# this class deals with the widgets related to the login window
 class LoginWindow(QWidget):
     def __init__(self, *args, **kwargs):
         super().__init__(*args,**kwargs)
