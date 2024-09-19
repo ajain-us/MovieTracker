@@ -17,7 +17,7 @@ python login.py
 ```
 
 ## Demo
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/dhY4MVqpcCM.jpg)](https://www.youtube.com/watch?v=dhY4MVqpcCM)
+[![Click to Watch!](https://img.youtube.com/vi/dhY4MVqpcCM.jpg)](https://www.youtube.com/watch?v=dhY4MVqpcCM)
 
 ## Notes
 
